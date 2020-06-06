@@ -3,7 +3,7 @@ from PIL import Image
 import exifread
 
 path = "D:\\testPics\\"
-supported_img_formats = ['jpg', 'png', 'mov', 'm4v']
+supported_img_formats = ['jpg']
 
 def is_supported_img(file):
     file_name, ext = os.path.splitext(file)
@@ -14,14 +14,14 @@ def is_supported_img(file):
     return False
 
 def get_date_taken(path):
-    # return Image.open(path)._getexif()
     f = open(path, 'rb')
     meta_content = exifread.process_file(f) 
-    for key in meta_content:
-        if 'date' in str(key).lower():
-            print(key)
-            print(meta_content[key])
-
+    if(meta_content != None):
+        for key in meta_content:
+            if 'date' in str(key).lower():
+                print(key)
+                print(meta_content[key])
+    return "DONE"
 
 for file in os.listdir(path):
     if os.path.isdir(path + file):
