@@ -2,7 +2,7 @@ import os
 import exifread
 from PIL import Image
 import time
-import datetime
+from datetime import datetime
 
 path = "D:\\testPics"
 test_file = "336053_4339577334193_1631752716_o.jpg"
@@ -20,7 +20,13 @@ def is_supported_img(file):
 
 
 def earliest_date(dates):
-    print(dates)
+    date_objects = []
+    for d in dates:
+        if(len(d.split(" ")) > 1):
+            do = datetime.strptime(d, "%Y:%m:%d %H:%M:%S")
+            date_objects.append(do)
+
+    return min(date_objects)
 
 
 def get_img_dates(path):
@@ -51,9 +57,9 @@ def get_img_dates(path):
     mtime = os.path.getmtime( path )
     atime = os.path.getatime( path )
     ctime = os.path.getctime( path )
-    m = datetime.datetime.fromtimestamp(mtime).strftime("%Y:%m:%d %H:%M:%S")
-    a = datetime.datetime.fromtimestamp(atime).strftime("%Y:%m:%d %H:%M:%S")
-    c = datetime.datetime.fromtimestamp(ctime).strftime("%Y:%m:%d %H:%M:%S")
+    m = datetime.fromtimestamp(mtime).strftime("%Y:%m:%d %H:%M:%S")
+    a = datetime.fromtimestamp(atime).strftime("%Y:%m:%d %H:%M:%S")
+    c = datetime.fromtimestamp(ctime).strftime("%Y:%m:%d %H:%M:%S")
     dates.append(m)
     dates.append(a)
     dates.append(c)
@@ -63,7 +69,6 @@ def get_img_dates(path):
 def navigate_directories(path):
     for file in os.listdir(path):
         if os.path.isdir(path + "\\" +  file):
-            print(file + " => is a directory")
             print("navigating in to the directory => " + file )
             navigate_directories(path + "\\" + file)
             
