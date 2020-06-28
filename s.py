@@ -2,6 +2,7 @@ import os
 import exifread
 from PIL import Image
 import time
+import datetime
 
 path = "D:\\testPics"
 test_file = "336053_4339577334193_1631752716_o.jpg"
@@ -18,8 +19,8 @@ def is_supported_img(file):
     return False
 
 
-def string_to_date(date_string):
-    print(date_string.split(" "))
+def earliest_date(dates):
+    print(dates)
 
 
 def get_img_dates(path):
@@ -30,38 +31,38 @@ def get_img_dates(path):
     pill = Image.open(path)._getexif();
 
     if(pill):
-        print("PIL")
         for key in pill:
             if(key == 306):
-                string_to_date(pill[key])
+                dates.append(str(pill[key]))
             elif(key == 36867):
-                string_to_date(pill[key])
+                dates.append(str(pill[key]))
             elif(key == 36868):
-                string_to_date(pill[key])
+                dates.append(str(pill[key]))
             elif(key == 29):
-                string_to_date(pill[key])
+                dates.append(str(pill[key]))
             else:
                 pass
-    elif(meta_content):
-        print("EXIFREAD")
+
+    if(meta_content):
         for key in meta_content:
             if 'date' in str(key).lower():
-                string_to_date(meta_content[key])
-    else:
-        print("OS.PATH")
-        mtime = os.path.getmtime( path )
-        atime = os.path.getatime( path )
-        ctime = os.path.getctime( path )
-        
-        print(time.ctime(mtime))
-        print(time.ctime(atime))
-        print(time.ctime(ctime))
-    return "DONE"
+                dates.append(str(meta_content[key]))
+
+    mtime = os.path.getmtime( path )
+    atime = os.path.getatime( path )
+    ctime = os.path.getctime( path )
+    m = datetime.datetime.fromtimestamp(mtime).strftime("%Y:%m:%d %H:%M:%S")
+    a = datetime.datetime.fromtimestamp(atime).strftime("%Y:%m:%d %H:%M:%S")
+    c = datetime.datetime.fromtimestamp(ctime).strftime("%Y:%m:%d %H:%M:%S")
+    dates.append(m)
+    dates.append(a)
+    dates.append(c)
+    
+    return dates
 
 def navigate_directories(path):
     for file in os.listdir(path):
         if os.path.isdir(path + "\\" +  file):
-            # navigate in directory.
             print(file + " => is a directory")
             print("navigating in to the directory => " + file )
             navigate_directories(path + "\\" + file)
@@ -69,7 +70,8 @@ def navigate_directories(path):
         else:
             if is_supported_img(file):
                 print(file + " => SUPPORTED file")
-                print(get_img_dates(path + "\\" + file))
+                dates = get_img_dates(path + "\\" + file)
+                earliest_date(dates)
             else:
                 print(file + " => NOT Accepted")
     else:
